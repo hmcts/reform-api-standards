@@ -3,19 +3,28 @@ package hello;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.http.MediaType;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.accept.ContentNegotiationManager;
+import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.NativeWebRequest;
 
 import com.github.zafarkhaja.semver.Version;
 
@@ -23,59 +32,60 @@ import com.github.zafarkhaja.semver.Version;
 public class HelloController {
 	private static final Logger logger = LoggerFactory.getLogger(HelloController.class);
 	Pattern pattern = Pattern.compile("version=\"(.*?)\"");
+	
+	@Autowired
+	ApplicationContext context;;
 
-	// #Accept:
-	// application/vnd.uk.gov.hmcts.<micro-service-name>.<domain-object-name>.<...?>+json;
-	// version="^1.0.1"
 	@RequestMapping(value = "/versions", 
-					produces = { "application/json",
-								 "application/vnd.uk.gov.hmcts.test+json;q=0.1;version=1.0.1" })
+					produces = { "application/vnd.uk.gov.hmcts.test+json;version=1.0.1" })
 	@ResponseBody
-	public String version_v101(@RequestHeader(value = "Accept", required = false) String acceptHeader) {
-		logger.info("************ Called with following Accept header: " + acceptHeader);
+	public String version_v101(@RequestHeader(value = "Accept", required = false) String acceptHeader,
+	                            NativeWebRequest request) throws HttpMediaTypeNotAcceptableException {
+		Map<String, ContentNegotiationStrategy> map = 
+				BeanFactoryUtils.beansOfTypeIncludingAncestors(context, ContentNegotiationStrategy.class, true, false);
+		map.forEach((k, v) -> System.out.printf("%s=%s%n", k, v.getClass().getSimpleName()));
+		ContentNegotiationManager m = (ContentNegotiationManager) map.get("mvcContentNegotiationManager");
+		List<ContentNegotiationStrategy> strategies = m.getStrategies();
+	    strategies.forEach(s-> System.out.println(s.getClass().getName()));
+	    // dswefw
+	    /*for (ContentNegotiationStrategy cns : strategies) {
+            if (cns instanceof VersionAwareHeaderContentNegotiationStrategy) {
+                List<MediaType> list = ((VersionAwareHeaderContentNegotiationStrategy) cns).resolveMediaTypes(request);
+                System.out.println("-- Accept header content configured with custom Negotiation Strategy --");
+                list.forEach(l -> System.out.println(l.getParameters()));
+            }
+        }*/   
+	    
+		return new String("endpoint v1.0.1: SemVer lib result: "+ match(acceptHeader, request.getNativeRequest(HttpServletRequest.class)));
+	}
 
+/*	public String version_v131(@RequestHeader(value = "Accept", required = false) String acceptHeader,
+								HttpServletRequest request) {
+		return new String("endpoint v1.3.0: SemVer lib result: "+ match(acceptHeader, request));
+	}
+
+	@RequestMapping(value = "/versions", 
+					produces = {"application/vnd.uk.gov.hmcts.test.v1+json;version=1.3.4"})
+	@ResponseBody
+	public String version_v134(@RequestHeader(value = "Accept", required = false) String acceptHeader,
+								HttpServletRequest request) {
+		return new String("endpoint v1.3.4: SemVer lib result: "+ match(acceptHeader, request));
+	}
+
+	@RequestMapping(value = "/versions", 
+					produces = {"application/vnd.uk.gov.hmcts.test+json;version=2.5.0"})
+	@ResponseBody
+	public String version_v250(@RequestHeader(value = "Accept", required = false) String acceptHeader,
+								HttpServletRequest request) {
+		return new String("endpoint v2.5.0: SemVer lib result: "+ match(acceptHeader, request));
+	}
+*/
+	private String match(String acceptHeader, HttpServletRequest request) {
+		logger.info(request.getRequestURI()+ " called with Accept:" + acceptHeader);
 		Matcher matcher = pattern.matcher(acceptHeader);
-		logger.info("************ regexp result: " + matcher.group(1));
 		if (matcher.find())
-			return matchingVersion(matcher.group(1), new String[] { "1.0.1", "1.3.4", "2.5.0" });
-
-		return new String("v1.0.1 endpoint");
-	}
-
-	@RequestMapping(value = "/versions", 
-					produces = { "application/json", "application/vnd.uk.gov.hmcts.test+json;q=0.9;version=1.3.4"})
-	@ResponseBody
-	public String version_v134(@RequestHeader(value = "Accept", required = false) String acceptHeader) {
-		logger.info("************ Called with following Accept header: " + acceptHeader);
-		Pattern pattern = Pattern.compile("version=\"(.*?)\"");
-		Matcher matcher = pattern.matcher(acceptHeader);
-		if (matcher.find()) {
-			logger.info("************ " + matcher.group(1));
-			return matchingVersion(matcher.group(1), new String[] { "1.0.1", "1.3.4", "2.5.0" });
-			// new ArrayList<String>(Arrays.asList("1.0.1", "1.3.4", "2.5"))
-		} else
-			logger.info("************ No version found!");
-
-		return new String("v1.3.4 endpoint");
-	}
-
-	@RequestMapping(value = "/versions", 
-					produces = { "application/json", 
-								 "application/vnd.uk.gov.hmcts.test.v2+json",
-								 "application/vnd.uk.gov.hmcts.test.v2.5.0+json;version=2.5.0" })
-	@ResponseBody
-	public String versions_v250(@RequestHeader(value = "Accept", required = false) String acceptHeader) {
-		logger.info("************ Called with following Accept header: " + acceptHeader);
-		Pattern pattern = Pattern.compile("version=\"(.*?)\"");
-		Matcher matcher = pattern.matcher(acceptHeader);
-		if (matcher.find()) {
-			logger.info("************ " + matcher.group(1));
-			return matchingVersion(matcher.group(1), new String[] { "1.0.1", "1.3.4", "2.5.0" });
-			// new ArrayList<String>(Arrays.asList("1.0.1", "1.3.4", "2.5"))
-		} else
-			logger.info("************ No version found!");
-
-		return new String("v2.5.0 endpoint");
+			return matchingVersion(matcher.group(1), new String[] { "1.0.1", "1.3.1", "1.3.4", "2.5.0" });
+		return "no match";
 	}
 
 	private String matchingVersion(String version, String[] listOfVersionsToMatchTo) {
@@ -98,7 +108,7 @@ public class HelloController {
 		return "Greetings from Spring Boot!";
 	}
 
-	@RequestMapping(value = "/method6", produces = { "application/json", "application/xml",
+/*	@RequestMapping(value = "/method6", produces = { "application/json", "application/xml",
 			"application/vnd.uk.gov.hmcts.test+json" }, consumes = "text/html")
 	@ResponseBody
 	public String method6() {
@@ -110,5 +120,6 @@ public class HelloController {
 	public String method8(@PathVariable("id") long id, @PathVariable("name") String name) {
 		return "method8 with id= " + id + " and name=" + name;
 	}
-
+*/
 }
+ 
