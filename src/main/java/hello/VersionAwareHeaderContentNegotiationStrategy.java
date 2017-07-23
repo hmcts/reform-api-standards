@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +17,11 @@ import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import com.github.zafarkhaja.semver.Version;
-
+/**
+ * our own implementation of HeaderContentNegotiationStrategy
+ */
 public class VersionAwareHeaderContentNegotiationStrategy implements ContentNegotiationStrategy {
+    
     private static final Logger logger = LoggerFactory.getLogger(VersionAwareHeaderContentNegotiationStrategy.class);
     
     private CopyOnWriteArraySet<String> supportedVersionsList;
@@ -44,10 +45,13 @@ public class VersionAwareHeaderContentNegotiationStrategy implements ContentNego
         List<String> headerValues = Arrays.asList(headerValueArray);
         try {
             List<MediaType> mediaTypes = VersionAwareMediaType.parseMediaTypes(headerValues);
+            //NOTE: not a good strategy here as VersionAwareMediaType is losing our implementation 
+            //      of isComparableWith when casting to MediaType so only viable choice is to
+            //      modify Spring's MimeType to handle versions as well
             List<MediaType> mediaTypes_compiled = new ArrayList<MediaType>();
 //            MediaType.sortBySpecificityAndQuality(mediaTypes);
             /*
-            //Print call stack to check how it got here
+            //Print call stack to check how it got here for debug
             System.out.print("Call stack: "); 
             Arrays.asList(Thread.currentThread().getStackTrace()).forEach(s -> System.out.println("---> "+ s.toString()));*/
             logger.info("List of supported versions: "+ supportedVersionsList);
@@ -59,10 +63,12 @@ public class VersionAwareHeaderContentNegotiationStrategy implements ContentNego
                 
                 if (!supportedVersionsList.contains(mt.getParameter("version"))) {
                     logger.debug("Removing "+ mt.getParameter("version")+ " from supported MediTypes list");
+                    // NOTE: just realised we're actually modifying requestor's accepted list of types
+                    //       we should actually remove from the other list (produces one) 
                     //iterator.remove();
                     mediaTypes_compiled.add(new MediaType(mt.getType(), "notsupported"));
                 } else {
-                    mediaTypes_compiled.add(new MediaType(mt.getType(), mt.getSubtype()+"."+ mt.getParameter("version")));
+                    mediaTypes_compiled.add(mt);
                 }
             }
             return mediaTypes_compiled;

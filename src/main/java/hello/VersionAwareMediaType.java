@@ -2,11 +2,7 @@ package hello;
 
 import java.util.Map;
 
-import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
-import org.springframework.util.InvalidMimeTypeException;
-import org.springframework.util.MimeType;
-import org.springframework.util.MimeTypeUtils;
 
 public class VersionAwareMediaType extends MediaType {
 
