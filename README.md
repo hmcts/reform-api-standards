@@ -7,10 +7,11 @@ mvn test
 # Problem description
 ... coming soon
 
-# Some conclusions
+# Some conclusions/solutions:
 
 1.	Get accept header in one controller and run the private function needed for the specific version
-This is the ugliest one
+
+       This is the ugliest one
 ```java
        public String version(@RequestHeader(value = "Accept", required = false) String acceptHeader,
                              NativeWebRequest request) throws HttpMediaTypeNotAcceptableException {
