@@ -1,4 +1,4 @@
-# spk-version-support-in-accept-header
+# Goal
 checking best option to add Spring support for attribute ```version``` in HTTP Accept header. 
 
 It must support [Semantic versioning](http://semver.org/), see [jsemver](https://github.com/zafarkhaja/jsemver) for a java implementation library
@@ -7,7 +7,7 @@ It must support [Semantic versioning](http://semver.org/), see [jsemver](https:/
 # run
 mvn test
 
-# Problem description
+# Context
 Spring support for HTTP Accept Header versioning is in this form
 ```http
 Accept: application/vnd.uk.gov.hmcts.test+json-1.0.1+json
