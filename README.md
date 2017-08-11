@@ -67,6 +67,7 @@ private String matchingVersion(String version, String[] listOfVersionsToMatchTo)
 
 3.	Add custom annotation for version based method running
 
-       Looks good, haven’t tried it yet but still looks like a bit of a hack to build support for this as custom annotations when this is a standard thing
-https://www-stackoverflow-info.blogspot.co.uk/2016/02/how-to-manage-rest-api-versioning-with.html
-https://stackoverflow.com/questions/20655614/request-mapping-using-headers-in-spring-mvc
+       Looks good, haven’t tried it yet but still looks like a bit of a hack to build support for this as custom annotations when this is should be a standard implementation:
+       
+       https://www-stackoverflow-info.blogspot.co.uk/2016/02/how-to-manage-rest-api-versioning-with.html
+       https://stackoverflow.com/questions/20655614/request-mapping-using-headers-in-spring-mvc
