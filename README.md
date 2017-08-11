@@ -1,7 +1,7 @@
 # spk-version-support-in-accept-header
 checking best option to add Spring support for attribute ```version``` in HTTP Accept header. 
 
-It must support [Semantic versioning](http://semver.org/)
+It must support [Semantic versioning](http://semver.org/), see [jsemver](https://github.com/zafarkhaja/jsemver) for a java implementation library
 
 
 # run
@@ -9,15 +9,21 @@ mvn test
 
 # Problem description
 Spring support for HTTP Accept Header versioning is in this form
-
-```application/vnd.uk.gov.hmcts.test+json-1.0.1+json```
-
+```http
+Accept: application/vnd.uk.gov.hmcts.test+json-1.0.1+json
+```
 there is a need for supporting:
-
-```application/vnd.uk.gov.hmcts.test+json;version=1.0.1```
-
-
-
+```http
+Accept: application/vnd.uk.gov.hmcts.test+json;version=1.0.1
+```
+where version should be able to also use semver expressions like:
+```http
+Accept: application/vnd.uk.gov.hmcts.test+json; version="^1.0.1"
+```
+Namig convention for HMCTS applications should be:
+```html
+application/vnd.uk.gov.hmcts.<micro-service-name>.<domain-object-name>.<...?>
+```
 
 # Some conclusions/solutions:
 
