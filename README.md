@@ -1,4 +1,4 @@
-# spk-version-support-in-accept-header
+# Goal
 checking best option to add Spring support for attribute ```version``` in HTTP Accept header. 
 
 It must support [Semantic versioning](http://semver.org/), see [jsemver](https://github.com/zafarkhaja/jsemver) for a java implementation library
@@ -7,7 +7,7 @@ It must support [Semantic versioning](http://semver.org/), see [jsemver](https:/
 # run
 mvn test
 
-# Problem description
+# Context
 Spring support for HTTP Accept Header versioning is in this form
 ```http
 Accept: application/vnd.uk.gov.hmcts.test+json-1.0.1+json
@@ -67,6 +67,7 @@ private String matchingVersion(String version, String[] listOfVersionsToMatchTo)
 
 3.	Add custom annotation for version based method running
 
-       Looks good, haven’t tried it yet but still looks like a bit of a hack to build support for this as custom annotations when this is a standard thing
-https://www-stackoverflow-info.blogspot.co.uk/2016/02/how-to-manage-rest-api-versioning-with.html
-https://stackoverflow.com/questions/20655614/request-mapping-using-headers-in-spring-mvc
+       Looks good, haven’t tried it yet but still looks like a bit of a hack to build support for this as custom annotations when this is should be a standard implementation:
+       
+       https://www-stackoverflow-info.blogspot.co.uk/2016/02/how-to-manage-rest-api-versioning-with.html
+       https://stackoverflow.com/questions/20655614/request-mapping-using-headers-in-spring-mvc
