@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 @Configuration
 @EnableWebMvc
-@ComponentScan
+@ComponentScan({"hello", "uk.gov.hmcts.reform.api.deprecated"})
 public class WebConfig extends WebMvcConfigurerAdapter {
 	
 	  @Override
