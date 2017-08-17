@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 @Configuration
-@ComponentScan(basePackages = {"com.augusto.test.web.controller"})
+@ComponentScan(basePackages = {"uk.gov.hmcts.reform.api.versioning.web.controller"})
 public class WebConfiguration {
 
     @Bean
