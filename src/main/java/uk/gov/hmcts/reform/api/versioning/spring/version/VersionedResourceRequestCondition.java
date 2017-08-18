@@ -1,6 +1,14 @@
 package uk.gov.hmcts.reform.api.versioning.spring.version;
 
 import com.github.zafarkhaja.semver.Version;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.InvalidMimeTypeException;
@@ -9,21 +17,22 @@ import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.mvc.condition.AbstractRequestCondition;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
-
 public class VersionedResourceRequestCondition extends AbstractRequestCondition<VersionedResourceRequestCondition> {
+    private final Set<String> availableVersions;
     private Logger logger = LoggerFactory.getLogger(VersionedResourceRequestCondition.class);
     private final Set<Version> versions;
     private final String acceptedMediaType;
 
-    public VersionedResourceRequestCondition(String acceptedMediaType, String supported) {
-        this(acceptedMediaType, new HashSet<Version>(Arrays.asList(Version.valueOf(supported))));
+    public VersionedResourceRequestCondition(String acceptedMediaType, String supported,
+            Set<String> availableVersions) {
+        this(acceptedMediaType, new HashSet<Version>(Arrays.asList(Version.valueOf(supported))), availableVersions);
     }
 
-    public VersionedResourceRequestCondition(String acceptedMediaType, Collection<Version> versions) {
+    public VersionedResourceRequestCondition(String acceptedMediaType, Collection<Version> versions,
+            Set<String> availableVersions) {
         this.acceptedMediaType = acceptedMediaType;
         this.versions = Collections.unmodifiableSet(new HashSet<Version>(versions));
+        this.availableVersions = availableVersions;
         logger.debug("Annotated Mapping: "+ versions+ " -> Created: "+ this.toString());
     }
 
@@ -43,7 +52,8 @@ public class VersionedResourceRequestCondition extends AbstractRequestCondition<
         } else {
             newMediaType = other.acceptedMediaType;
         }
-        return new VersionedResourceRequestCondition(newMediaType, newVersions);
+        // TODO: combine availableVersions
+        return new VersionedResourceRequestCondition(newMediaType, newVersions, availableVersions);
     }
 
     @Override
@@ -57,6 +67,19 @@ public class VersionedResourceRequestCondition extends AbstractRequestCondition<
         catch (InvalidMimeTypeException ex) {
             throw new IllegalArgumentException("Invalid media type \"" + mediaType + "\": " + ex.getMessage(), ex);
         }
+        String requestedVersion = type.getParameter("version");
+        Set<Version> allVersions = getAvailableVersionsForMimeType();
+
+        // if no specific version was requested...
+        if (requestedVersion == null || requestedVersion.isEmpty()) {
+
+            // then look for the latest version and check it against "supported" value
+            Version latestVersion = allVersions.stream().max(Version::compareTo).get();
+            Version firstFound = versions.iterator().next();
+            if (latestVersion.satisfies(firstFound.toString())) {
+                return this;
+            }
+        }
 
         if (type.getParameter("version") != null &&
             !type.getParameter("version").isEmpty()) {
@@ -64,8 +87,8 @@ public class VersionedResourceRequestCondition extends AbstractRequestCondition<
             String logMessage="Serving: "+ versions.toString()+ "; Requested: "+ type.getParameter("version");
 
             if (acceptedMediaType.startsWith(type.getType())) {
-                for (Version v : versions) {
-                    if (v.satisfies(type.getParameter("version"))) {
+                for (Version v : allVersions) {
+                    if (v.satisfies(requestedVersion)) {
                         logger.debug("Matching version found! "+ logMessage);
                         return this;
                     } else
@@ -77,6 +100,11 @@ public class VersionedResourceRequestCondition extends AbstractRequestCondition<
         }
 
         return null;
+    }
+
+    private Set<Version> getAvailableVersionsForMimeType() {
+        return availableVersions.stream().map(Version::valueOf).sorted(Version::compareTo)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @Override
