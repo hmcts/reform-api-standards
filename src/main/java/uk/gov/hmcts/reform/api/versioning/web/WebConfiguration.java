@@ -29,19 +29,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import uk.gov.hmcts.reform.api.versioning.spring.version.CacheVersionInitProcessor;
 
 @Configuration
 @ComponentScan(basePackages = {"uk.gov.hmcts.reform.api.versioning.web.controller"})
 public class WebConfiguration {
 
     @Bean
-    public RequestMappingHandlerMapping requestMappingHandlerMapping() {
+    public RequestMappingHandlerMapping requestMappingHandlerMapping(CacheVersionInitProcessor cacheVersionInitProcessor) {
         CustomRequestMappingHandlerMapping handlerMapping = new CustomRequestMappingHandlerMapping();
         handlerMapping.setOrder(0);
         handlerMapping.setRemoveSemicolonContent(false);
         handlerMapping.setContentNegotiationManager(contentNegotiationManager());
+        handlerMapping.setAvailableVersions(cacheVersionInitProcessor.getVersions());
 
         return handlerMapping;
+    }
+
+    @Bean
+    public CacheVersionInitProcessor cacheVersionInitProcessor() {
+        return new CacheVersionInitProcessor();
     }
 
     @Bean
