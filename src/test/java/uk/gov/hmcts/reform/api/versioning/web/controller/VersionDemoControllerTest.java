@@ -17,6 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.api.versioning.app.AppConfiguration;
 import uk.gov.hmcts.reform.api.versioning.web.WebConfiguration;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -43,7 +44,9 @@ public class VersionDemoControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/version")
                 .accept("application/vnd.uk.gov.hmcts.test+json"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("content-type", "application/vnd.uk.gov.hmcts.test+json;version=2.1.0;charset=UTF-8"));
+                .andExpect(header().string("content-type", "application/vnd.uk.gov.hmcts.test+json;version=2.1.0"))
+                .andExpect(jsonPath("version", equalTo("1.0.1")))
+                .andExpect(jsonPath("generatedByApiVersion", equalTo("2.1.0")));
     }
 
     @Test
@@ -51,7 +54,9 @@ public class VersionDemoControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/version")
                 .accept("application/vnd.uk.gov.hmcts.test+json;version=~1"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("content-type", "application/vnd.uk.gov.hmcts.test+json;version=1.10.0;charset=UTF-8"));
+                .andExpect(header().string("content-type", "application/vnd.uk.gov.hmcts.test+json;version=1.10.0"))
+                .andExpect(jsonPath("version", equalTo("1.0.0")))
+                .andExpect(jsonPath("generatedByApiVersion", equalTo("1.10.0")));
     }
 
     @Test
@@ -59,7 +64,9 @@ public class VersionDemoControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/version")
                 .accept("application/vnd.uk.gov.hmcts.test+json;version=~1.9"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("content-type", "application/vnd.uk.gov.hmcts.test+json;version=1.9.5;charset=UTF-8"));
+                .andExpect(header().string("content-type", "application/vnd.uk.gov.hmcts.test+json;version=1.9.5"))
+                .andExpect(jsonPath("version", equalTo("1.0.0")))
+                .andExpect(jsonPath("generatedByApiVersion", equalTo("1.9.5")));
     }
 
     @Test
@@ -67,7 +74,9 @@ public class VersionDemoControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/version")
                 .accept("application/vnd.uk.gov.hmcts.test+json;version=1.9.2"))
                 .andExpect(status().isOk())
-                .andExpect(header().string("content-type", "application/vnd.uk.gov.hmcts.test+json;version=1.9.2;charset=UTF-8"));
+                .andExpect(header().string("content-type", "application/vnd.uk.gov.hmcts.test+json;version=1.9.2"))
+                .andExpect(jsonPath("version", equalTo("1.0.0")))
+                .andExpect(jsonPath("generatedByApiVersion", equalTo("1.9.2")));
     }
 
     @Test
@@ -81,6 +90,8 @@ public class VersionDemoControllerTest {
     public void shouldReturnLatestVersionIfResourceHeaderIsMissing() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/version")
                 .accept(MediaType.ALL))
-                .andExpect(header().string("content-type", "application/vnd.uk.gov.hmcts.test+json;version=2.1.0;charset=UTF-8"));
+                .andExpect(header().string("content-type", "application/vnd.uk.gov.hmcts.test+json;version=2.1.0"))
+                .andExpect(jsonPath("version", equalTo("1.0.1")))
+                .andExpect(jsonPath("generatedByApiVersion", equalTo("2.1.0")));
     }
 }
