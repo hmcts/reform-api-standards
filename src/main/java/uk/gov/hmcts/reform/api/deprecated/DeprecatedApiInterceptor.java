@@ -34,7 +34,7 @@ public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
     private void handleHeaders(HttpServletResponse response, HandlerMethod handler) {
         for (GenericDeclaration source : getAnnotatedSources(handler)) {
             Map<String, String> headers = getHeaders(source);
-            if (headers != null) {
+            if (!headers.isEmpty()) {
                 copyWarning(response, headers);
                 return;
             }
@@ -53,12 +53,11 @@ public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
     }
 
     private static Map<String, String> computeHeaders(GenericDeclaration source) {
-        Map<String, String> headers = null;
+        Map<String, String> headers = new HashMap<>();
         if (source.isAnnotationPresent(APIDeprecated.class)) {
             APIDeprecated deprecated = source.getAnnotation(APIDeprecated.class);
             RequestMapping mapping = source.getAnnotation(RequestMapping.class);
 
-            headers = new HashMap<>();
             headers.put(WARNING, getWarningMessage(deprecated, mapping));
         }
         return headers;
