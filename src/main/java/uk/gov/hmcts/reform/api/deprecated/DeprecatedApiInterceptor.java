@@ -25,20 +25,22 @@ public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        return !(handler instanceof HandlerMethod) || handleHeaders(response, (HandlerMethod) handler);
+        if (handler instanceof HandlerMethod) {
+            handleHeaders(response, (HandlerMethod) handler);
+        }
+        return true;
     }
 
-    private boolean handleHeaders(HttpServletResponse response, HandlerMethod handler) {
+    private void handleHeaders(HttpServletResponse response, HandlerMethod handler) {
         for (GenericDeclaration source : getAnnotatedSources(handler)) {
             Map<String, String> headers = getHeaders(source);
             if (headers != null) {
                 copyWarning(response, headers);
-                return true;
+                return;
             }
         }
 
         log.trace("No @APIDeprecated headers found for request handler: {}", handler);
-        return true;
     }
 
     private static List<GenericDeclaration> getAnnotatedSources(HandlerMethod handler) {
