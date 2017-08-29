@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.api.deprecated;
 
 import hello.Application;
-import hello.HelloController;
 import org.hamcrest.core.StringContains;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,9 +37,6 @@ public class DeprecatedApiInterceptorTest {
     private WebApplicationContext wac;
 
     private MockMvc mockMvc;
-
-    @InjectMocks
-    private HelloController controller;
 
     @InjectMocks
     private DeprecatedClassController deprecatedClassController;
