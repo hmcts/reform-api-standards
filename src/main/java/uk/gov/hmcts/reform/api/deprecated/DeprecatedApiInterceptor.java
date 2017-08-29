@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.api.deprecated;
 import java.lang.reflect.GenericDeclaration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +12,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -21,7 +21,7 @@ import static org.springframework.http.HttpHeaders.WARNING;
 public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
     private static final Logger log = LoggerFactory.getLogger(DeprecatedApiInterceptor.class);
     protected static final String DEPRECATED_AND_REMOVED = " is deprecated and will be removed by ";
-    private Map<GenericDeclaration, Map<String, String>> responseHeadersByHandler = new IdentityHashMap<>();
+    private Map<GenericDeclaration, Optional<String>> responseHeadersByHandler = new IdentityHashMap<>();
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -47,23 +47,22 @@ public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
     }
 
     private boolean handleSource(HttpServletResponse response, GenericDeclaration source) {
-        Map<String, String> headers = responseHeadersByHandler
+        Optional<String> headers = responseHeadersByHandler
             .computeIfAbsent(source, DeprecatedApiInterceptor::computeHeaders);
 
         copyWarning(response, headers);
 
-        return !headers.isEmpty();
+        return headers.isPresent();
     }
 
-    private static Map<String, String> computeHeaders(GenericDeclaration source) {
-        Map<String, String> headers = new HashMap<>();
+    private static Optional<String> computeHeaders(GenericDeclaration source) {
         if (source.isAnnotationPresent(APIDeprecated.class)) {
             APIDeprecated deprecated = source.getAnnotation(APIDeprecated.class);
             RequestMapping mapping = source.getAnnotation(RequestMapping.class);
 
-            headers.put(WARNING, getWarningMessage(deprecated, mapping));
+            return Optional.of(getWarningMessage(deprecated, mapping));
         }
-        return headers;
+        return Optional.empty();
     }
 
     private static String getWarningMessage(APIDeprecated apiDeprecated, RequestMapping requestMapping) {
@@ -80,9 +79,9 @@ public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
         return sb.toString();
     }
 
-    private static void copyWarning(HttpServletResponse response, Map<String, String> headers) {
-        if (headers.get(WARNING) != null) {
-            response.setHeader(WARNING, headers.get(WARNING));
+    private static void copyWarning(HttpServletResponse response, Optional<String> headers) {
+        if (headers.isPresent()) {
+            response.setHeader(WARNING, headers.get());
         }
     }
 }
