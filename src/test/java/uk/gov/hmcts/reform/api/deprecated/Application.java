@@ -1,4 +1,4 @@
-package hello;
+package uk.gov.hmcts.reform.api.deprecated;
 
 import java.util.Arrays;
 

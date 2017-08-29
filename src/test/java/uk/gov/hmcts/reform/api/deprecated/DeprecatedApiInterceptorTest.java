@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.api.deprecated;
 
-import hello.Application;
 import org.hamcrest.core.StringContains;
 import org.junit.Before;
 import org.junit.Test;
