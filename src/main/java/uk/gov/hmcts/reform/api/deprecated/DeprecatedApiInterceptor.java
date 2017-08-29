@@ -33,9 +33,8 @@ public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
 
     private void handleHeaders(HttpServletResponse response, HandlerMethod handler) {
         for (GenericDeclaration source : getAnnotatedSources(handler)) {
-            Map<String, String> headers = getHeaders(source);
-            if (!headers.isEmpty()) {
-                copyWarning(response, headers);
+            boolean handled = handleSource(response, source);
+            if (handled) {
                 return;
             }
         }
@@ -43,13 +42,17 @@ public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
         log.trace("No @APIDeprecated headers found for request handler: {}", handler);
     }
 
-    private static List<GenericDeclaration> getAnnotatedSources(HandlerMethod handler) {
-        return Arrays.asList(handler.getBeanType(), handler.getMethod());
+    private boolean handleSource(HttpServletResponse response, GenericDeclaration source) {
+        Map<String, String> headers = responseHeadersByHandler
+            .computeIfAbsent(source, o -> computeHeaders((GenericDeclaration) o));
+
+        copyWarning(response, headers);
+
+        return !headers.isEmpty();
     }
 
-    private Map<String, String> getHeaders(GenericDeclaration source) {
-        return responseHeadersByHandler
-            .computeIfAbsent(source, o -> computeHeaders((GenericDeclaration) o));
+    private static List<GenericDeclaration> getAnnotatedSources(HandlerMethod handler) {
+        return Arrays.asList(handler.getBeanType(), handler.getMethod());
     }
 
     private static Map<String, String> computeHeaders(GenericDeclaration source) {
@@ -78,6 +81,8 @@ public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
     }
 
     private static void copyWarning(HttpServletResponse response, Map<String, String> headers) {
-        response.setHeader(WARNING, headers.get(WARNING));
+        if (headers.get(WARNING) != null) {
+            response.setHeader(WARNING, headers.get(WARNING));
+        }
     }
 }
