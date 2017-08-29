@@ -20,7 +20,7 @@ import static org.springframework.http.HttpHeaders.WARNING;
 
 public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
     private static final Logger log = LoggerFactory.getLogger(DeprecatedApiInterceptor.class);
-    protected static final String DEPRECATED_AND_REMOVED = " is deprecated and will be removed by ";
+    static final String DEPRECATED_AND_REMOVED = " is deprecated and will be removed by ";
     private Map<GenericDeclaration, Optional<String>> handlerWarningMessages = new IdentityHashMap<>();
 
     @Override
