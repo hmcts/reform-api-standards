@@ -25,10 +25,10 @@ public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        return !(handler instanceof HandlerMethod) || preHandle(response, (HandlerMethod) handler);
+        return !(handler instanceof HandlerMethod) || handleHeaders(response, (HandlerMethod) handler);
     }
 
-    private boolean preHandle(HttpServletResponse response, HandlerMethod handler) {
+    private boolean handleHeaders(HttpServletResponse response, HandlerMethod handler) {
         for (GenericDeclaration source : getAnnotatedSources(handler)) {
             Map<String, String> headers = getHeaders(source);
             if (headers != null) {
