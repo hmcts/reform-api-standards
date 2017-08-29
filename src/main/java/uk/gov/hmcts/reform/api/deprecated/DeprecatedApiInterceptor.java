@@ -50,7 +50,7 @@ public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
         Optional<String> warningMessage = handlerWarningMessages
             .computeIfAbsent(source, DeprecatedApiInterceptor::computeWarningMessage);
 
-        copyWarning(response, warningMessage);
+        warningMessage.ifPresent(message -> response.setHeader(WARNING, message));
 
         return warningMessage.isPresent();
     }
@@ -77,11 +77,5 @@ public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
             .append(" for details. ")
             .append(apiDeprecated.note());
         return sb.toString();
-    }
-
-    private static void copyWarning(HttpServletResponse response, Optional<String> warningMessage) {
-        if (warningMessage.isPresent()) {
-            response.setHeader(WARNING, warningMessage.get());
-        }
     }
 }
