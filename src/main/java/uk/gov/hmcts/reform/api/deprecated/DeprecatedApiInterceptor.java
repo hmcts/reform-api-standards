@@ -47,12 +47,12 @@ public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
     }
 
     private boolean handleSource(HttpServletResponse response, GenericDeclaration source) {
-        Optional<String> headers = responseHeadersByHandler
+        Optional<String> warningMessage = responseHeadersByHandler
             .computeIfAbsent(source, DeprecatedApiInterceptor::computeWarningMessage);
 
-        copyWarning(response, headers);
+        copyWarning(response, warningMessage);
 
-        return headers.isPresent();
+        return warningMessage.isPresent();
     }
 
     private static Optional<String> computeWarningMessage(GenericDeclaration source) {
@@ -79,9 +79,9 @@ public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
         return sb.toString();
     }
 
-    private static void copyWarning(HttpServletResponse response, Optional<String> headers) {
-        if (headers.isPresent()) {
-            response.setHeader(WARNING, headers.get());
+    private static void copyWarning(HttpServletResponse response, Optional<String> warningMessage) {
+        if (warningMessage.isPresent()) {
+            response.setHeader(WARNING, warningMessage.get());
         }
     }
 }
