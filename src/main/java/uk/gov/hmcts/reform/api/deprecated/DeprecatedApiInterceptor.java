@@ -48,14 +48,14 @@ public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
 
     private boolean handleSource(HttpServletResponse response, GenericDeclaration source) {
         Optional<String> headers = responseHeadersByHandler
-            .computeIfAbsent(source, DeprecatedApiInterceptor::computeHeaders);
+            .computeIfAbsent(source, DeprecatedApiInterceptor::computeWarningMessage);
 
         copyWarning(response, headers);
 
         return headers.isPresent();
     }
 
-    private static Optional<String> computeHeaders(GenericDeclaration source) {
+    private static Optional<String> computeWarningMessage(GenericDeclaration source) {
         if (source.isAnnotationPresent(APIDeprecated.class)) {
             APIDeprecated deprecated = source.getAnnotation(APIDeprecated.class);
             RequestMapping mapping = source.getAnnotation(RequestMapping.class);
