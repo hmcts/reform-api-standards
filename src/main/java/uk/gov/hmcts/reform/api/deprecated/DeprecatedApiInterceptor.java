@@ -42,6 +42,10 @@ public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
         log.trace("No @APIDeprecated headers found for request handler: {}", handler);
     }
 
+    private static List<GenericDeclaration> getAnnotatedSources(HandlerMethod handler) {
+        return Arrays.asList(handler.getBeanType(), handler.getMethod());
+    }
+
     private boolean handleSource(HttpServletResponse response, GenericDeclaration source) {
         Map<String, String> headers = responseHeadersByHandler
             .computeIfAbsent(source, o -> computeHeaders((GenericDeclaration) o));
@@ -49,10 +53,6 @@ public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
         copyWarning(response, headers);
 
         return !headers.isEmpty();
-    }
-
-    private static List<GenericDeclaration> getAnnotatedSources(HandlerMethod handler) {
-        return Arrays.asList(handler.getBeanType(), handler.getMethod());
     }
 
     private static Map<String, String> computeHeaders(GenericDeclaration source) {
