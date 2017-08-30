@@ -1,4 +1,4 @@
-package hello;
+package uk.gov.hmcts.reform.api.deprecated;
 
 import java.util.Arrays;
 
@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.handler.MappedInterceptor;
 
 @SpringBootApplication
 public class Application {
@@ -30,4 +31,8 @@ public class Application {
         };
     }
 
+    @Bean
+    public MappedInterceptor deprecatedApiInterceptor() {
+        return new MappedInterceptor(null, new DeprecatedApiInterceptor());
+    }
 }

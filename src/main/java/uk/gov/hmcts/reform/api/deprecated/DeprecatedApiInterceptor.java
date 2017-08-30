@@ -1,16 +1,17 @@
 package uk.gov.hmcts.reform.api.deprecated;
 
+import java.lang.reflect.GenericDeclaration;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -19,64 +20,52 @@ import static org.springframework.http.HttpHeaders.WARNING;
 
 public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
     private static final Logger log = LoggerFactory.getLogger(DeprecatedApiInterceptor.class);
-    protected static final String DEPRECATED_AND_REMOVED = " is deprecated and will be removed by ";
-    private Map<Object, Map<String, String>> responseHeadersByHandler = new IdentityHashMap<>();
+    static final String DEPRECATED_AND_REMOVED = " is deprecated and will be removed by ";
+    private Map<GenericDeclaration, Optional<String>> handlerWarningMessages = new IdentityHashMap<>();
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        if (!(handler instanceof HandlerMethod)) return true;
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
-        Map<String, String> headers = getHeadersFromClass(handlerMethod);
-        if (headers == null) {
-            headers = getHeadersFromMethod(handlerMethod);
-            if (headers != null) {
-                response.setHeader(WARNING, headers.get(WARNING));
-            } else {
-                log.trace("No @APIDeprecated headers found for request handler: {}", handler);
-            }
-        } else {
-            response.setHeader(WARNING, headers.get(WARNING));
+        if (handler instanceof HandlerMethod) {
+            handleHeaders(response, (HandlerMethod) handler);
         }
         return true;
     }
 
-    private Map<String, String> getHeadersFromClass(HandlerMethod handlerMethod) {
-        Class javaClass = handlerMethod.getBeanType();
-        Map<String, String> headers = responseHeadersByHandler.get(javaClass);
-        if (headers == null) {
-            APIDeprecated apiDeprecated = AnnotationUtils.findAnnotation(javaClass, APIDeprecated.class);
-            RequestMapping requestMapping = AnnotationUtils.findAnnotation(javaClass, RequestMapping.class);
-            if (apiDeprecated != null) {
-                headers = new HashMap<>();
-                headers.put(WARNING, getWarningMessage(apiDeprecated, requestMapping));
-                responseHeadersByHandler.put(javaClass, headers);
-                return headers;
+    private void handleHeaders(HttpServletResponse response, HandlerMethod handler) {
+        for (GenericDeclaration source : getAnnotatedSources(handler)) {
+            boolean handled = handleSource(response, source);
+            if (handled) {
+                return;
             }
-            return null;
-        } else {
-            return headers;
         }
+
+        log.trace("No @APIDeprecated headers found for request handler: {}", handler);
     }
 
-    private Map<String, String> getHeadersFromMethod(HandlerMethod handlerMethod) {
-        Method javaMethod = handlerMethod.getMethod();
-        Map<String, String> headers = responseHeadersByHandler.get(javaMethod);
-        if (headers == null) {
-            APIDeprecated apiDeprecated = AnnotationUtils.findAnnotation(javaMethod, APIDeprecated.class);
-            RequestMapping requestMapping = AnnotationUtils.findAnnotation(javaMethod, RequestMapping.class);
-            if (apiDeprecated != null) {
-                headers = new HashMap<>();
-                headers.put(WARNING, getWarningMessage(apiDeprecated, requestMapping));
-                responseHeadersByHandler.put(javaMethod, headers);
-                return headers;
-            }
-            return null;
-        } else {
-            return headers;
-        }
+    private static List<GenericDeclaration> getAnnotatedSources(HandlerMethod handler) {
+        return Arrays.asList(handler.getBeanType(), handler.getMethod());
     }
 
-    private String getWarningMessage(APIDeprecated apiDeprecated, RequestMapping requestMapping) {
+    private boolean handleSource(HttpServletResponse response, GenericDeclaration source) {
+        Optional<String> warningMessage = handlerWarningMessages
+            .computeIfAbsent(source, DeprecatedApiInterceptor::computeWarningMessage);
+
+        warningMessage.ifPresent(message -> response.setHeader(WARNING, message));
+
+        return warningMessage.isPresent();
+    }
+
+    private static Optional<String> computeWarningMessage(GenericDeclaration source) {
+        if (source.isAnnotationPresent(APIDeprecated.class)) {
+            APIDeprecated deprecated = source.getAnnotation(APIDeprecated.class);
+            RequestMapping mapping = source.getAnnotation(RequestMapping.class);
+
+            return Optional.of(getWarningMessage(deprecated, mapping));
+        }
+        return Optional.empty();
+    }
+
+    private static String getWarningMessage(APIDeprecated apiDeprecated, RequestMapping requestMapping) {
         StringBuilder sb = new StringBuilder();
         sb.append("The ")
             .append(requestMapping != null && requestMapping.value().length > 0 ? requestMapping.value()[0] : "")

@@ -1,12 +1,9 @@
 package uk.gov.hmcts.reform.api.deprecated;
 
-import hello.Application;
-import hello.HelloController;
 import org.hamcrest.core.StringContains;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
@@ -20,7 +17,6 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.inject.Inject;
 
 import static org.apache.http.HttpHeaders.WARNING;
-import static org.springframework.http.ResponseEntity.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -32,18 +28,10 @@ import static uk.gov.hmcts.reform.api.deprecated.DeprecatedApiInterceptor.DEPREC
 @ComponentScan("uk.gov.hmcts.reform.api.deprecated")
 @WebAppConfiguration
 public class DeprecatedApiInterceptorTest {
-    private static final String URL_PREFIX = "http://localhost:8080";
-
     @Inject
     private WebApplicationContext wac;
 
     private MockMvc mockMvc;
-
-    @InjectMocks
-    private HelloController controller;
-
-    @InjectMocks
-    private DeprecatedClassController deprecatedClassController;
 
     @Before
     public void setUp() {
