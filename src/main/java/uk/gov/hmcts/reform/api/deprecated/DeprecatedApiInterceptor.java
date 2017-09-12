@@ -1,19 +1,19 @@
 package uk.gov.hmcts.reform.api.deprecated;
 
-import java.lang.reflect.GenericDeclaration;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import java.lang.reflect.GenericDeclaration;
+import java.util.Arrays;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.IdentityHashMap;
-import java.util.Map;
 
 import static org.springframework.http.HttpHeaders.WARNING;
 

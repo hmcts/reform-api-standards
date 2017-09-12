@@ -33,7 +33,7 @@ allprojects {
             reports.all { report ->
                 def outputFile = report.destination
                 if (outputFile.exists() && outputFile.text.contains("<error ")) {
-                  //  throw new GradleException("There were checkstyle warnings! For more info check $outputFile")
+                  throw new GradleException("There were checkstyle warnings! For more info check $outputFile")
                 }
             }
         }
@@ -49,14 +49,6 @@ allprojects {
         compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBootVersion
     }
 }
-
-//jacocoTestReport {
-//    reports {
-//        csv.enabled false
-//        html.enabled true
-//        // html.destination file("${buildDir}/jacocoHtml")
-//    }
-//}
 
 publishing {
     publications {
