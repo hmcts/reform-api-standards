@@ -8,17 +8,19 @@ A typical usage would be to add the @APIDeprecated annotation to a method as in 
 
 ```
     @RequestMapping("/deprecated")
-    @APIDeprecated(name = "Deprecated Endpoint",
-            date = "01/06/2018",
-            link = "https://example.org/docs/api/deprecated/",
-            note = "Just a note, upgrade your client code!!!")
+    @APIDeprecated(
+            name = "Deprecated Endpoint",
+            expiryDate = "01/06/2018",
+            docLink = "https://example.org/docs/api/deprecated/",
+            note = "Just a note, upgrade your client code!!!"
+    )
     public String deprecated() {
         return "Greetings from deprecated Class Controller!";
     }
 ```
 The annotation has the attributes that are used for forming a `Warning` header. 
 - `name` for friendly name of the endpoint, 
-- `expireDate` for the date which the endpoint will cease to serve, 
+- `expiryDate` for the date which the endpoint will cease to serve, 
 - `docLink` for the details of documentation regarding the API updates
 - `note` for optional notes to the clients
 
@@ -30,10 +32,12 @@ warning →The UserProfileEndpoint is deprecated and will be removed by 20/09/20
 It is possible to add the `@APIDeprecated` annotation on top of a `@Controller` class to deprecate all the endpoints served by that `@Controller` at once.
 ``` 
 @RestController
-@APIDeprecated(name = "Deprecated API set",
-        expireDate = "30/09/2018",
+@APIDeprecated(
+        name = "Deprecated API set",
+        expiryDate = "30/09/2018",
         docLink = "https://example.org/docs/api/deprecated/",
-        note = "Just a note, upgrade your client code!!!")
+        note = "Just a note, upgrade your client code!!!"
+)
 public class DeprecatedClassController {
 
     @RequestMapping("/depclass")
