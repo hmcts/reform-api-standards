@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
 public @interface APIDeprecated {
     String name();
     String docLink();
-    String expireDate();
+    String expiryDate();
     String note() default "";
 }

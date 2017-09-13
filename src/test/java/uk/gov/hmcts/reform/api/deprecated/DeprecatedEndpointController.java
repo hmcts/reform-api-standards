@@ -8,7 +8,7 @@ public class DeprecatedEndpointController {
 
     @RequestMapping("/deprecated")
     @APIDeprecated(name = "Deprecated Endpoint",
-            expireDate = "01/06/2018",
+            expiryDate = "01/06/2018",
             docLink = "https://example.org/docs/api/deprecated/",
             note = "Just a note, upgrade your client code!!!")
     public String deprecated() {

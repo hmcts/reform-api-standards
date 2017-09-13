@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @APIDeprecated(name = "Deprecated API set",
-        expireDate = "30/09/2018",
+        expiryDate = "30/09/2018",
         docLink = "https://example.org/docs/api/deprecated/",
         note = "Just a note, upgrade your client code!!!")
 public class DeprecatedClassController {
