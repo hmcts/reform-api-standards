@@ -71,7 +71,7 @@ public class DeprecatedApiInterceptor extends HandlerInterceptorAdapter {
             .append(requestMapping != null && requestMapping.value().length > 0 ? requestMapping.value()[0] : "")
             .append(" ")
             .append(apiDeprecated.name()).append(DEPRECATED_AND_REMOVED)
-            .append(apiDeprecated.expireDate())
+            .append(apiDeprecated.expiryDate())
             .append(". Please see ")
             .append(apiDeprecated.docLink())
             .append(" for details. ")
