@@ -8,7 +8,7 @@ buildscript {
 }
 
 def versions = [
-        springBootVersion: '1.5.2.RELEASE'
+        springBootVersion: '1.5.7.RELEASE'
 ]
 
 allprojects {
