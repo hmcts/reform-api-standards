@@ -8,12 +8,12 @@ buildscript {
 }
 
 def versions = [
-        springBootVersion: '1.5.7.RELEASE'
+        springBootVersion: '1.5.8.RELEASE'
 ]
 
 allprojects {
     group 'uk.gov.hmcts.reform'
-    version '0.2.1'
+    version '0.2.2'
 
     apply plugin: 'java'
     apply plugin: 'java-library'
