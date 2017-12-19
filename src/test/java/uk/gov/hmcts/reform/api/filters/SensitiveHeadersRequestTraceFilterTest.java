@@ -30,7 +30,7 @@ public class SensitiveHeadersRequestTraceFilterTest {
                 "Custom Sensitive Header 2"
             );
 
-        Sets.union(SensitiveHeadersRequestTraceFilter.DEFAULT_SENSITIVE_HEADERS, customSensitiveHeaders)
+        Sets.union(SensitiveHeadersRequestTraceFilter.BASE_SENSITIVE_HEADERS, customSensitiveHeaders)
             .forEach(sensitive -> {
                 headers.put(sensitive, "some_value");
                 headers.put(sensitive.toLowerCase(Locale.ENGLISH), "some_value");

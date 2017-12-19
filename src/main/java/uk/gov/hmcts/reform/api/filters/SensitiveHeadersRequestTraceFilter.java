@@ -16,7 +16,8 @@ import static java.util.stream.Collectors.toSet;
  */
 public class SensitiveHeadersRequestTraceFilter extends WebRequestTraceFilter {
 
-    public static final Set<String> DEFAULT_SENSITIVE_HEADERS =
+    // those headers are always filtered out
+    public static final Set<String> BASE_SENSITIVE_HEADERS =
         ImmutableSet.of(
             "ServiceAuthorization"
         );
@@ -34,7 +35,7 @@ public class SensitiveHeadersRequestTraceFilter extends WebRequestTraceFilter {
         TraceProperties properties
     ) {
         super(repository, properties);
-        sensitiveHeaders = DEFAULT_SENSITIVE_HEADERS;
+        sensitiveHeaders = BASE_SENSITIVE_HEADERS;
     }
 
     /**
@@ -49,7 +50,7 @@ public class SensitiveHeadersRequestTraceFilter extends WebRequestTraceFilter {
         Set<String> additionalCustomHeaders
     ) {
         super(repository, properties);
-        sensitiveHeaders = Sets.union(DEFAULT_SENSITIVE_HEADERS, additionalCustomHeaders);
+        sensitiveHeaders = Sets.union(BASE_SENSITIVE_HEADERS, additionalCustomHeaders);
     }
     // endregion
 
