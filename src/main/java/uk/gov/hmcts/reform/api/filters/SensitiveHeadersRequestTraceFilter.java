@@ -24,6 +24,11 @@ public class SensitiveHeadersRequestTraceFilter extends WebRequestTraceFilter {
     private final Set<String> sensitiveHeaders;
 
     // region constructors
+    /**
+     * Create a new {@link SensitiveHeadersRequestTraceFilter} instance.
+     * @param repository the trace repository
+     * @param properties the trace properties
+     */
     public SensitiveHeadersRequestTraceFilter(
         TraceRepository repository,
         TraceProperties properties
@@ -32,6 +37,12 @@ public class SensitiveHeadersRequestTraceFilter extends WebRequestTraceFilter {
         sensitiveHeaders = DEFAULT_SENSITIVE_HEADERS;
     }
 
+    /**
+     * Create a new {@link SensitiveHeadersRequestTraceFilter} instance.
+     * @param repository the trace repository
+     * @param properties the trace properties
+     * @param additionalCustomHeaders additional headers that should also be filtered out
+     */
     public SensitiveHeadersRequestTraceFilter(
         TraceRepository repository,
         TraceProperties properties,
