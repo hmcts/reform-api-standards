@@ -47,6 +47,10 @@ allprojects {
 
     dependencies {
         compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBootVersion
+        compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBootVersion
+
+        compile group: 'com.google.guava', name: 'guava', version: '23.5-jre'
+
     }
 }
 
