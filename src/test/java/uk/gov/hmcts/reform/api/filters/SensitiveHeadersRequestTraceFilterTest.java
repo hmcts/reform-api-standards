@@ -24,7 +24,11 @@ public class SensitiveHeadersRequestTraceFilterTest {
         headers.put("OK Header 2", "xxx");
         headers.put("OK Header 3", "xxx");
 
-        Set<String> customSensitiveHeaders = ImmutableSet.of("Custom Sensitive Header 1", "Custom Sensitive Header 2");
+        Set<String> customSensitiveHeaders =
+            ImmutableSet.of(
+                "Custom Sensitive Header 1",
+                "Custom Sensitive Header 2"
+            );
 
         Sets.union(SensitiveHeadersRequestTraceFilter.DEFAULT_SENSITIVE_HEADERS, customSensitiveHeaders)
             .forEach(sensitive -> {
