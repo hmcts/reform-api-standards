@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.api.filters;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -24,8 +24,9 @@ public class SensitiveHeadersRequestTraceFilterTest {
         headers.put("OK Header 2", "xxx");
         headers.put("OK Header 3", "xxx");
 
-        SensitiveHeadersRequestTraceFilter
-            .DEFAULT_SENSITIVE_HEADERS
+        Set<String> customSensitiveHeaders = ImmutableSet.of("Custom Sensitive Header 1", "Custom Sensitive Header 2");
+
+        Sets.union(SensitiveHeadersRequestTraceFilter.DEFAULT_SENSITIVE_HEADERS, customSensitiveHeaders)
             .forEach(sensitive -> {
                 headers.put(sensitive, "some_value");
                 headers.put(sensitive.toLowerCase(Locale.ENGLISH), "some_value");
@@ -33,7 +34,7 @@ public class SensitiveHeadersRequestTraceFilterTest {
             });
 
         // when
-        new SensitiveHeadersRequestTraceFilter(null, null)
+        new SensitiveHeadersRequestTraceFilter(null, null, customSensitiveHeaders)
             .postProcessRequestHeaders(headers);
 
         // then
@@ -42,35 +43,6 @@ public class SensitiveHeadersRequestTraceFilterTest {
                 entry("OK Header 1", "xxx"),
                 entry("OK Header 2", "xxx"),
                 entry("OK Header 3", "xxx")
-            );
-    }
-
-    @Test
-    public void should_use_custom_headers_provided_in_constructor() {
-
-        // given
-        Set<String> customSensitiveHeaders = ImmutableSet.of(
-            "A",
-            "B"
-        );
-
-        Map<String, Object> headers = new HashMap<>(ImmutableMap.of(
-            "A", "1",
-            "B", "2",
-            "b", "2",
-            "C", "3",
-            "D", "4"
-        ));
-
-        // when
-        new SensitiveHeadersRequestTraceFilter(null, null, customSensitiveHeaders)
-            .postProcessRequestHeaders(headers);
-
-        // then
-        assertThat(headers)
-            .containsExactly(
-                entry("C", "3"),
-                entry("D", "4")
             );
     }
 }
