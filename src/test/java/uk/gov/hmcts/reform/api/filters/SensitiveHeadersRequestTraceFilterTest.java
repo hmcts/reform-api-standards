@@ -11,6 +11,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static uk.gov.hmcts.reform.api.filters.SensitiveHeadersRequestTraceFilter.BASE_SENSITIVE_HEADERS;
 
 public class SensitiveHeadersRequestTraceFilterTest {
 
@@ -20,9 +21,8 @@ public class SensitiveHeadersRequestTraceFilterTest {
         // given
         Map<String, Object> headers = new HashMap<>();
 
-        headers.put("OK Header 1", "xxx");
-        headers.put("OK Header 2", "xxx");
-        headers.put("OK Header 3", "xxx");
+        headers.put("OK Header 1", "aaa");
+        headers.put("OK Header 2", "bbb");
 
         Set<String> customSensitiveHeaders =
             ImmutableSet.of(
@@ -30,11 +30,12 @@ public class SensitiveHeadersRequestTraceFilterTest {
                 "Custom Sensitive Header 2"
             );
 
-        Sets.union(SensitiveHeadersRequestTraceFilter.BASE_SENSITIVE_HEADERS, customSensitiveHeaders)
-            .forEach(sensitive -> {
-                headers.put(sensitive, "some_value");
-                headers.put(sensitive.toLowerCase(Locale.ENGLISH), "some_value");
-                headers.put(sensitive.toUpperCase(Locale.ENGLISH), "some_value");
+        // add different variants of sensitive headers to a map
+        Sets.union(BASE_SENSITIVE_HEADERS, customSensitiveHeaders)
+            .forEach(it -> {
+                headers.put(it, "some_value");
+                headers.put(it.toLowerCase(Locale.ENGLISH), "some_value");
+                headers.put(it.toUpperCase(Locale.ENGLISH), "some_value");
             });
 
         // when
@@ -44,9 +45,8 @@ public class SensitiveHeadersRequestTraceFilterTest {
         // then
         assertThat(headers)
             .containsOnly(
-                entry("OK Header 1", "xxx"),
-                entry("OK Header 2", "xxx"),
-                entry("OK Header 3", "xxx")
+                entry("OK Header 1", "aaa"),
+                entry("OK Header 2", "bbb")
             );
     }
 }
