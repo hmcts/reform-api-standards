@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/hmcts/reform-api-standards.svg?branch=master)](https://travis-ci.org/hmcts/reform-api-standards)
 
-This library contains a set of Spring Boot components used across HMCTS apis.
+This library contains a set of Spring Boot components used across HMCTS APIs.
 
 ## SensitiveHeadersRequestTraceFilter
 Removes sensitive headers before they are added to Spring trace.  
@@ -21,15 +21,14 @@ An annotation for controller classes and methods that adds warning headers to th
 A typical usage would be to add the `@APIDeprecated` annotation to a method as in the following example:
 
 ```java
-@RequestMapping("/deprecated")
 @APIDeprecated(
     name = "Deprecated Endpoint",
     expiryDate = "2018-06-30",
     docLink = "https://example.org/docs/foo",
     note = "Some note."
 )
-public String deprecated() {
-    return "hello";
+public Model someAction() {
+    // request handling code ...
 }
 ```
 The annotation has the attributes that are used for forming a `Warning` header. 
