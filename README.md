@@ -9,7 +9,7 @@ In order to use this filter declare the following Bean in your app:
 ```java
 @Bean
 public RequestTraceFilter requestTraceFilter(TraceRepository traceRepository, TraceProperties traceProperties) {
-    return new RequestTraceFilter(traceRepository, traceProperties, <your_custom_headers_go_here>);
+    return new RequestTraceFilter(traceRepository, traceProperties, <your_custom_headers_goes_here>);
 }
 ```
 
