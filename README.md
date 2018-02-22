@@ -1,6 +1,7 @@
 # Reform API standards
 
 [![Build Status](https://travis-ci.org/hmcts/reform-api-standards.svg?branch=master)](https://travis-ci.org/hmcts/reform-api-standards)
+[![Download](https://api.bintray.com/packages/hmcts/hmcts-maven/reform-api-standards/images/download.svg)](https://bintray.com/hmcts/hmcts-maven/reform-api-standards/_latestVersion)
 
 This library contains a set of Spring Boot components used across HMCTS APIs.
 
@@ -10,8 +11,11 @@ In order to use this filter declare the following Bean in your app:
 
 ```java
 @Bean
-public RequestTraceFilter requestTraceFilter(TraceRepository traceRepository, TraceProperties traceProperties) {
-    return new RequestTraceFilter(traceRepository, traceProperties, <your_custom_headers_go_here>);
+public SensitiveHeadersRequestTraceFilter requestTraceFilter(
+    TraceRepository traceRepository, 
+    TraceProperties traceProperties
+) {
+    return new SensitiveHeadersRequestTraceFilter(traceRepository, traceProperties, <your_custom_headers_go_here>);
 }
 ```
 
