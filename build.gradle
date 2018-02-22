@@ -54,6 +54,13 @@ allprojects {
     }
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        csv.enabled = false
+    }
+}
+
 publishing {
     publications {
         Main(MavenPublication) {
