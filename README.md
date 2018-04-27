@@ -11,11 +11,8 @@ In order to use this filter declare the following Bean in your app:
 
 ```java
 @Bean
-public SensitiveHeadersRequestTraceFilter requestTraceFilter(
-    TraceRepository traceRepository, 
-    TraceProperties traceProperties
-) {
-    return new SensitiveHeadersRequestTraceFilter(traceRepository, traceProperties, <your_custom_headers_go_here>);
+public SensitiveHeadersRequestTraceFilter requestTraceFilter(Set<Include> includes) {
+    return new SensitiveHeadersRequestTraceFilter(includes, <your_custom_headers_go_here>);
 }
 ```
 
