@@ -1,6 +1,7 @@
 # Reform API standards
 
 [![Build Status](https://travis-ci.org/hmcts/reform-api-standards.svg?branch=master)](https://travis-ci.org/hmcts/reform-api-standards)
+[![codecov](https://codecov.io/gh/hmcts/reform-api-standards/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/reform-api-standards)
 [![Download](https://api.bintray.com/packages/hmcts/hmcts-maven/reform-api-standards/images/download.svg)](https://bintray.com/hmcts/hmcts-maven/reform-api-standards/_latestVersion)
 
 This library contains a set of Spring Boot components used across HMCTS APIs.
