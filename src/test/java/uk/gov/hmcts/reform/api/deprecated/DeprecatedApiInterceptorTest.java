@@ -18,7 +18,6 @@ import javax.inject.Inject;
 
 import static org.apache.http.HttpHeaders.WARNING;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.api.deprecated.DeprecatedApiInterceptor.DEPRECATED_AND_REMOVED;
