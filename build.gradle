@@ -79,3 +79,11 @@ dependencies {
     testImplementation group: 'javax.inject', name: 'javax.inject', version: '1'
 }
 
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
