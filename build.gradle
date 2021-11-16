@@ -59,7 +59,7 @@ artifacts {
 
 publishing {
     publications {
-        Main(MavenPublication) {
+        maven(MavenPublication) {
             from components.java
             artifact sourcesJar
             artifact javadocJar
@@ -85,5 +85,6 @@ bootJar {
 
 jar {
     enabled = true
+    archiveClassifier = ''
 }
 
