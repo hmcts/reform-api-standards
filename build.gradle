@@ -29,7 +29,7 @@ allprojects {
         implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
         implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
 
-        implementation group: 'com.google.guava', name: 'guava', version: '33.4.6-jre'
+        implementation group: 'com.google.guava', name: 'guava', version: '33.4.7-jre'
 
     }
 }
